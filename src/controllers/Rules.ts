@@ -12,7 +12,7 @@ export default class Rules {
       },
       region: {
         data_available: true,
-        prohibited_on: [] as any[],
+        restrictions: [] as any[],
       },
     };
     return reply(response).code(200);

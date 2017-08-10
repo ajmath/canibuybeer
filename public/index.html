@@ -4,17 +4,51 @@
   <meta charset="UTF-8">
   <title>Can I buy beer?</title>
   <style type="text/css">
-    html, body {height: 100%;}
-    body {text-align: center;}
-
-    div#answer {
-      display: inline-block;
-      margin-top: 200px;
-      font-weight: bold;
-      font-size: 120pt;
+    body {
+      text-align: center;
       font-family: Arial, sans-serif;
       text-decoration: none;
       color: black;
+    }
+    
+    div#container {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex-direction: column;
+      height:100vh;
+    }
+
+    div#answer {
+      margin-top: 200px;
+      font-weight: bold;
+      font-size: 120pt;
+    }
+
+    div#details {
+      padding: 20px;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+    }
+
+    .error {
+      color: darkred;
+      background-color: coral;
+      font-size: 120pt;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+    }
+    .detail-desc {
+      padding-top: 5px;
+      max-width: 100px;
+      margin: auto;
+      font-size: 10pt;
     }
   </style>
   <script>
@@ -26,14 +60,39 @@
     function errorHandler(message) {
       return function(error) {
         console.error(message, error);
-        setAnswer("?!?")
+        setAnswer("?!?");
+        document.getElementById("error").innerText = message;
       }
     }
 
+
+    function addRestriction(restriction) {
+      var item = document.createElement("div");
+      item.className = "detail-item";
+
+      var title = document.createElement("b");
+      title.innerText = restriction.what;
+      item.appendChild(title);
+
+      var desc = document.createElement("div");
+      for (var i = 0; i < restriction.when.length; i++) {
+        var when = document.createElement("div");
+        when.innerText = restriction.when[i];
+        desc.appendChild(when);
+      }
+      item.appendChild(desc);
+
+      document.getElementById("details").appendChild(item);
+    }
+
     function updateAnswerForRules(region) {
+      document.getElementById("error").innerText = "";
       console.log("Got rules from API", region);
       if (region.data_available) {
         setAnswer("Yes");
+        for (var i = 0; i < region.restrictions.length; i++) {
+          addRestriction(region.restrictions[i]);
+        }
       }
     }
 
@@ -55,15 +114,21 @@
 
     function getAnswer() {
       if (!navigator.geolocation) {
-        return onLocationError("geolocation not supported on this browser");
+        return errorHandler("Geolocation is not supported on this browser")();
       }
       navigator.geolocation.getCurrentPosition((p) => getRulesForLocation(p), errorHandler("Unable to get location"));
     }
   </script>
 </head>
 <body onload="getAnswer()">
-<div id="answer">
-  ?
-</div>
+  <div id="container">
+    <div id="answer">
+      ?
+    </div>
+    <div id="error">
+    </div>
+    <div id="details">
+    </div>
+  </div>
 </body>
 </html>

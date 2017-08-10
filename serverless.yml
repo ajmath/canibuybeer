@@ -1,0 +1,64 @@
+service: canibuybeer
+
+custom:
+  local: local
+  deployStage: ${opt:stage, self:custom.local}
+  config: ${file(src/config/${self:custom.deployStage}.js):default}
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: ${self:custom.config.awsRegion}
+  stage: ${self:custom.deployStage}
+  timeout: 30
+  memorySize: 128
+  environment:
+    NODE_ENV: ${self:custom.deployStage}
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
+package:
+  include:
+    - src/config/
+    - public
+
+functions:
+  httpHandler:
+    handler: src/index.httpHandler
+    events:
+      - http: any /
+      - http:
+          path: "{proxy+}"
+          method: any
+          cors: true
+
+resources:
+  Resources:
+    BeerDomainName:
+      Type: "AWS::ApiGateway::DomainName"
+      Properties:
+        CertificateArn: ${self:custom.config.acmCertArn}
+        DomainName: ${self:custom.config.urls.canIBuyBeer}
+    BeerBasePathMapping:
+      Type: "AWS::ApiGateway::BasePathMapping"
+      DependsOn:
+        - BeerDNSRecord
+      Properties:
+        DomainName: ${self:custom.config.urls.canIBuyBeer}
+        RestApiId: { Ref: ApiGatewayRestApi }
+        Stage: ${self:custom.deployStage}
+        BasePath: "(none)"
+    BeerDNSRecord:
+      Type: "AWS::Route53::RecordSet"
+      Properties:
+        HostedZoneName: canibuybeer.com.
+        Name: ${self:custom.config.urls.canIBuyBeer}.
+        Type: CNAME
+        TTL: "60"
+        ResourceRecords:
+          - Fn::Join: [ "", [
+            { Ref: ApiGatewayRestApi },
+            ".execute-api.${self:custom.config.awsRegion}.amazonaws.com"
+          ]]

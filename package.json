@@ -1,0 +1,21 @@
+{
+  "name": "canibuybeer",
+  "version": "1.0.0",
+  "description": "Can I buy beer?",
+  "main": "index.js",
+  "author": "Andrew Matheny <andrew.j.matheny@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/aws-lambda": "^0.0.16",
+    "@types/hapi": "^16.1.8",
+    "@types/inert": "^4.2.2",
+    "serverless": "^1.19.0",
+    "serverless-offline": "^3.15.3",
+    "serverless-plugin-typescript": "^1.0.0",
+    "typescript": "^2.4.2"
+  },
+  "dependencies": {
+    "hapi": "^16.5.2",
+    "inert": "^4.2.1"
+  }
+}

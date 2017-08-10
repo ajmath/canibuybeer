@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "lib": ["es6", "es2016.array.include"],
+    "baseUrl": "./src",
+    "sourceMap": true,
+    "allowJs": true,
+    "checkJs": true,
+    "noUnusedLocals": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "skipLibCheck": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "src/types"
+    ],
+    "plugins": [
+      { "name": "tslint-language-service" }
+    ],
+    "rootDir": "."
+  },
+  "include" : [
+    "src/config/",
+    "src/**/*",
+    "test/**/*"
+  ],
+  "exclude": [
+    ".build",
+    ".serverless_plugins",
+    "node_modules",
+    "!node_modules/@types"
+  ]
+}
